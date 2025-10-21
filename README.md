@@ -8,11 +8,12 @@
 - ✅ **MongoDB** - Database with Mongoose ODM
 - ✅ **Redis** - Caching and session management
 - ✅ **Docker** - Complete containerized development environment
+- ✅ **Swagger/OpenAPI** - Interactive API documentation
 - ✅ **TypeScript** - Fully typed codebase
+- ✅ **Fastify** - High-performance web framework
 
 ## Quick Start
 
-See [QUICKSTART.md](./QUICKSTART.md) for a complete setup guide.
 
 ```bash
 # Install dependencies
@@ -26,7 +27,24 @@ $ docker compose up -d
 
 # Start application
 $ npm run start:dev
+
+# Access Swagger documentation
+# Open http://localhost:3000/api/docs in your browser
 ```
+
+## API Documentation
+
+Interactive Swagger/OpenAPI documentation is available at:
+- **URL**: `http://localhost:3000/api/docs`
+- **Features**: Test endpoints, view schemas, authenticate with JWT
+- **Guide**: See [SWAGGER.md](./SWAGGER.md) for detailed documentation
+
+## Documentation
+
+- 📖 [Quick Start Guide](./QUICKSTART.md) - Get started in minutes
+- 🔐 [Authentication Guide](./AUTH.md) - Complete auth documentation
+- 📚 [Swagger API Docs](./SWAGGER.md) - API documentation guide
+- 🐳 [Docker Guide](./DOCKER.md) - Docker setup and commands
 
 ## Project setup
 
