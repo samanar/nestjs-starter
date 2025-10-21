@@ -38,9 +38,3 @@ Interactive Swagger/OpenAPI documentation is available at:
 - **URL**: `http://localhost:3000/api/docs`
 - **Features**: Test endpoints, view schemas, authenticate with JWT
 - **Guide**: See [SWAGGER.md](./SWAGGER.md) for detailed documentation
-
-
-
-
-
-

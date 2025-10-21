@@ -10,7 +10,6 @@ services:
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redispassword}
     networks:
       - nest-network
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 10s
@@ -21,7 +20,6 @@ services:
   mongo:
     image: mongo:latest
     container_name: mongo
-    restart: unless-stopped
     networks:
       - nest-network
     volumes:
