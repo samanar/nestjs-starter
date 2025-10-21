@@ -17,10 +17,11 @@ import {
   ApiBearerAuth,
   ApiParam,
 } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserService } from '../services/user.service';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { User } from '../schemas/user.schema';
 
 @ApiTags('users')
 @Controller('users')
@@ -46,7 +47,7 @@ export class UserController {
   })
   @ApiResponse({ status: 409, description: 'Username already exists' })
   @ApiResponse({ status: 400, description: 'Validation error' })
-  create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 
@@ -71,7 +72,7 @@ export class UserController {
     },
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  findAll() {
+  async findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
 
@@ -100,7 +101,7 @@ export class UserController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<User> {
     return this.userService.findOne(id);
   }
 
@@ -131,7 +132,10 @@ export class UserController {
   @ApiResponse({ status: 409, description: 'Username already exists' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 400, description: 'Validation error' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User> {
     return this.userService.update(id, updateUserDto);
   }
 

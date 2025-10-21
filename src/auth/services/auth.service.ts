@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import { RegisterDto } from './dto/register.dto';
-import { User } from '../user/schemas/user.schema';
+import { UserService } from '../../user/services/user.service';
+import { RegisterDto } from '../dto/register.dto';
+import { User } from '../../user/schemas/user.schema';
 import { Types } from 'mongoose';
 
 export interface JwtPayload {
@@ -84,7 +84,7 @@ export class AuthService {
     };
   }
 
-  async validateUserById(userId: string | Types.ObjectId): Promise<User> {
+  async validateUserById(userId: string | Types.ObjectId): Promise<any> {
     const user = await this.userService.findOne(userId);
     if (!user) {
       throw new UnauthorizedException();
@@ -92,7 +92,7 @@ export class AuthService {
     return user;
   }
 
-  async findOrCreateGoogleUser(profile: any): Promise<User> {
+  async findOrCreateGoogleUser(profile: any): Promise<any> {
     const email = profile.emails?.[0]?.value;
     const username = email || profile.id;
 

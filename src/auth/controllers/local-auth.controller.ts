@@ -4,12 +4,9 @@ import {
   Body,
   UseGuards,
   Get,
-  Req,
-  Res,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import type { Response } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -17,17 +14,17 @@ import {
   ApiBearerAuth,
   ApiBody,
 } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { GoogleAuthGuard } from './guards/google-auth.guard';
-import { CurrentUser } from './decorators/current-user.decorator';
+import { AuthService } from '../services/auth.service';
+import { RegisterDto } from '../dto/register.dto';
+import { LoginDto } from '../dto/login.dto';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { CurrentUser } from '../decorators/current-user.decorator';
+import { User } from 'src/user/schemas/user.schema';
 
 @ApiTags('auth')
 @Controller('auth')
-export class AuthController {
+export class LocalAuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
@@ -80,39 +77,6 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @Get('google')
-  @UseGuards(GoogleAuthGuard)
-  @ApiOperation({ summary: 'Initiate Google OAuth login' })
-  @ApiResponse({
-    status: 302,
-    description: 'Redirects to Google OAuth consent screen',
-  })
-  async googleAuth() {
-    // Initiates the Google OAuth flow
-  }
-
-  @Get('google/callback')
-  @UseGuards(GoogleAuthGuard)
-  @ApiOperation({ summary: 'Google OAuth callback handler' })
-  @ApiResponse({
-    status: 302,
-    description: 'Redirects to frontend with JWT token in query parameter',
-  })
-  @ApiResponse({ status: 401, description: 'Google authentication failed' })
-  async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
-    // Find or create user from Google profile
-    const user = await this.authService.findOrCreateGoogleUser(req.user);
-
-    // Generate JWT token
-    const authResponse = await this.authService.login(user);
-
-    // Redirect to frontend with token
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
-    return res.redirect(
-      `${frontendUrl}/auth/callback?token=${authResponse.access_token}`,
-    );
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('me')
   @ApiBearerAuth('JWT-auth')
@@ -133,7 +97,7 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized - Invalid or missing token',
   })
-  async getProfile(@CurrentUser() user: any) {
-    return this.authService.validateUserById(user.userId);
+  async getProfile(@CurrentUser() user: any): Promise<User> {
+    return this.authService.validateUserById(user._id);
   }
 }
