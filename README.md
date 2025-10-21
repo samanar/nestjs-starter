@@ -39,18 +39,7 @@ Interactive Swagger/OpenAPI documentation is available at:
 - **Features**: Test endpoints, view schemas, authenticate with JWT
 - **Guide**: See [SWAGGER.md](./SWAGGER.md) for detailed documentation
 
-## Documentation
 
-- 📖 [Quick Start Guide](./QUICKSTART.md) - Get started in minutes
-- 🔐 [Authentication Guide](./AUTH.md) - Complete auth documentation
-- 📚 [Swagger API Docs](./SWAGGER.md) - API documentation guide
-- 🐳 [Docker Guide](./DOCKER.md) - Docker setup and commands
-
-## Project setup
-
-```bash
-$ npm install
-```
 
 
 
