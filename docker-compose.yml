@@ -33,7 +33,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: adminPassword
     command: ["bash", "/docker-entrypoint-initdb.d/mongo-init.sh"]
   
-  app:
+  nest-app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -56,6 +56,3 @@ networks:
   nest-network:
     driver: bridge
 
-volumes:
-  redis-data:
-  mongo-data:
