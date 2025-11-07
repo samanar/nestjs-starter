@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if MongoDB is already initialized (replica set configured and running)
+if [ -f /data/db/mongo-initialized ]; then
+  echo "✅ MongoDB already initialized. Starting with authentication..."
+  exec mongod --replSet rs0 --bind_ip_all --auth --keyFile /data/db/mongo-keyfile
+fi
+
 echo "🔑 Generating MongoDB Keyfile..."
 openssl rand -base64 756 > /data/db/mongo-keyfile
 chmod 600 /data/db/mongo-keyfile
@@ -11,12 +17,22 @@ mongod --replSet rs0 --bind_ip_all --fork --logpath /var/log/mongodb.log
 echo "⏳ Waiting for MongoDB to start..."
 sleep 10
 
-echo "⚙️ Initiating Replica Set..."
+echo "⚙️ Checking/Initiating Replica Set..."
 mongosh --host localhost --eval "
-  rs.initiate({
-    _id: 'rs0',
-    members: [{ _id: 0, host: 'mongo:27017' }]
-  });
+  try {
+    const status = rs.status();
+    print('Replica set already initialized');
+  } catch (error) {
+    if (error.codeName === 'NotYetInitialized') {
+      print('Initializing replica set...');
+      rs.initiate({
+        _id: 'rs0',
+        members: [{ _id: 0, host: 'mongo:27017' }]
+      });
+    } else {
+      print('Error checking replica set status:', error);
+    }
+  }
 "
 
 echo "⏳ Waiting for Replica Set to be ready..."
@@ -39,20 +55,28 @@ mongosh --host localhost --eval "
   }
 "
 
-echo "👤 Creating admin user before enabling authentication..."
+echo "👤 Creating admin user (if not exists)..."
 mongosh --host localhost --eval "
   db = db.getSiblingDB('admin');
-  db.createUser({
-    user: 'admin',
-    pwd: 'adminPassword',
-    roles: [{ role: 'root', db: 'admin' }]
-  });
+  const existingUser = db.getUser('admin');
+  if (!existingUser) {
+    db.createUser({
+      user: 'admin',
+      pwd: 'adminPassword',
+      roles: [{ role: 'root', db: 'admin' }]
+    });
+    print('✅ Admin user created successfully.');
+  } else {
+    print('✅ Admin user already exists.');
+  }
 "
-
-echo "✅ Admin user created successfully."
 
 echo "⚙️ Running MongoDB initialization script..."
 mongosh --host localhost --username admin --password adminPassword --authenticationDatabase admin --eval "load('/docker-entrypoint-initdb.d/mongo-init.js')"
+
+# Mark initialization as complete
+echo "✅ Creating initialization marker..."
+touch /data/db/mongo-initialized
 
 echo "🔁 Restarting MongoDB with authentication enabled..."
 mongod --shutdown
