@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
@@ -7,7 +8,8 @@ export class LoginDto {
     example: 'johndoe',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Username is required' })
+  @Transform(({ value }) => value?.toLowerCase().trim())
   username: string;
 
   @ApiProperty({
@@ -15,6 +17,6 @@ export class LoginDto {
     example: 'password123',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Password is required' })
   password: string;
 }
