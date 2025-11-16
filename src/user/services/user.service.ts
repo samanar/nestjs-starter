@@ -11,7 +11,10 @@ import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../schemas/user.schema';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from '../../common/constants/validation.constants';
+import {
+  BCRYPT_SALT_ROUNDS,
+  PASSWORD_MIN_LENGTH,
+} from '../../common/constants/validation.constants';
 
 @Injectable()
 export class UserService {
@@ -236,9 +239,7 @@ export class UserService {
       });
 
       if (existingUser) {
-        this.logger.log(
-          `Google OAuth: User already exists ${data.username}`,
-        );
+        this.logger.log(`Google OAuth: User already exists ${data.username}`);
         return existingUser;
       }
 

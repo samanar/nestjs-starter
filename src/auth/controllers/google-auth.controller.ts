@@ -3,6 +3,7 @@ import type { Response } from 'express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
+import { UserDocument } from 'src/user/schemas/user.schema';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -30,7 +31,9 @@ export class GoogleAuthController {
   @ApiResponse({ status: 401, description: 'Google authentication failed' })
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     // Find or create user from Google profile
-    const user = await this.authService.findOrCreateGoogleUser(req.user);
+    const user = (await this.authService.findOrCreateGoogleUser(
+      req.user as any,
+    )) as UserDocument;
 
     // Generate JWT token
     const authResponse = await this.authService.login(user);
